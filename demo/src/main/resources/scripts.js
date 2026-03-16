@@ -2,7 +2,7 @@ let currentUserId = null;
 
 function userList() {
     $.ajax({
-        url: 'http://localhost:8080/api/users',
+        url: 'http://localhost:8081/api/users',
         type: 'GET',
         dataType: 'json',
         success: function (users) {
@@ -37,7 +37,6 @@ function userBuildTableRow(user) {
         "</tr>";
 }
 
-// Обработчики через делегирование (должны быть после загрузки DOM)
 $(document).on('click', '.delete-btn', function() {
     var id = $(this).data('id');
     deleteUser(id);
@@ -52,7 +51,7 @@ $(document).on('click', '.update-btn', function() {
 
 function deleteUser(id) {
     $.ajax({
-        url: 'http://localhost:8080/api/users/' + id,
+        url: 'http://localhost:8081/api/users/' + id,
         type: 'DELETE',
         success: function () {
             userList();
@@ -101,7 +100,7 @@ function updateClick() {
 
 function userAdd(user) {
     $.ajax({
-        url: "http://localhost:8080/api/users",
+        url: "http://localhost:8081/api/users",
         type: 'POST',
         contentType: "application/json;charset=utf-8",
         data: JSON.stringify(user),
@@ -116,12 +115,12 @@ function userAdd(user) {
 
 function userAddSuccess(user) {
     formClear();
-    userList(); // перезагружаем таблицу
+    userList();
 }
 
 function updateUser(id, user) {
     $.ajax({
-        url: 'http://localhost:8080/api/users/' + id,
+        url: 'http://localhost:8081/api/users/' + id,
         type: 'PUT',
         contentType: "application/json;charset=utf-8",
         data: JSON.stringify(user),
@@ -137,7 +136,7 @@ function updateUser(id, user) {
 
 function deleteAllClick() {
     $.ajax({
-        url: 'http://localhost:8080/api/users',
+        url: 'http://localhost:8081/api/users',
         type: 'DELETE',
         success: function () {
             userList();
@@ -150,7 +149,7 @@ function deleteAllClick() {
 
 function renameAllClick() {
     $.ajax({
-        url: 'http://localhost:8080/api/users/rename-all-to-efimov',
+        url: 'http://localhost:8081/api/users/rename-all-to-efimov',
         type: 'PUT',
         success: function () {
             userList();

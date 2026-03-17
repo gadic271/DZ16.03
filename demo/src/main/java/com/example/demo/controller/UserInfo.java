@@ -15,11 +15,11 @@ public class UserInfo {
     @JsonProperty("id")
     private Long id;
 
-    @JsonProperty("firstName")
-    private String firstName;
+    @JsonProperty("firstname")
+    private String firstname;
 
-    @JsonProperty("lastName")
-    private String lastName;
+    @JsonProperty("lastname")
+    private String lastname;
 
     @JsonProperty("age")
     private int age;

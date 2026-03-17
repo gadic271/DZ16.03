@@ -33,7 +33,7 @@ public class UserController {
         }
 
         UserEntity saved = userRepository.save(
-                new UserEntity(userInfo.getFirstName(), userInfo.getLastName(), userInfo.getAge())
+                new UserEntity(userInfo.getFirstname(), userInfo.getLastname(), userInfo.getAge())
         );
         return ResponseEntity.ok(new UserInfo(saved.getId(), saved.getFirstName(), saved.getLastName(), saved.getAge()));
     }
@@ -57,8 +57,8 @@ public class UserController {
         }
 
         UserEntity user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        user.setFirstName(userInfo.getFirstName());
-        user.setLastName(userInfo.getLastName());
+        user.setFirstName(userInfo.getFirstname());
+        user.setLastName(userInfo.getLastname());
         user.setAge(userInfo.getAge());
         userRepository.save(user);
         return ResponseEntity.ok(new UserInfo(user.getId(), user.getFirstName(), user.getLastName(), user.getAge()));

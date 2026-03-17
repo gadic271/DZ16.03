@@ -35,6 +35,7 @@ function userBuildTableRow(user) {
         "<td>" + user.age + "</td>" +
         "<td><button class='btn btn-danger btn-sm delete-btn' data-id='" + user.id + "'>Delete</button></td>" +
         "<td><button class='btn btn-warning btn-sm update-btn' data-id='" + user.id + "'>Update</button></td>" +
+        "<td><input type='checkboox' class='user-checkbox' data-id='" + user.id + "'></td>" +
         "</tr>";
 }
 
@@ -176,4 +177,40 @@ function setAllAgesTo100Click() {
             handleException(request, message, error);
         }
     });
+
+function deleteSelectedClick() {
+    var selectedIds = [];
+    $('.user-checkbox:checked').each(function() {
+        selectedIds.push($(this).data('id'));
+    });
+
+    if (selectedIds.length === 0) {
+        alert("No users selected");
+        return;
+    }
+
+    if (!confirm("Delete " + selectedIds.length + " selected user(s)?")) {
+        return;
+    }
+
+    var deletedCount = 0;
+    selectedIds.forEach(function(id) {
+        $.ajax({
+            url: 'http://localhost:8081/api/users/' + id,
+            type: 'DELETE',
+            success: function() {
+                deletedCount++;
+                if (deletedCount === selectedIds.length) {
+                    userList();
+                }
+            },
+            error: function(request, message, error) {
+                handleException(request, message, error);
+
+            }
+        });
+    });
+}
+
+
 }

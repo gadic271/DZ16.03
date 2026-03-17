@@ -20,4 +20,7 @@ public class UserInfo {
 
     @JsonProperty("lastName")
     private String lastName;
+
+    @JsonProperty("age")
+    private int age;
 }

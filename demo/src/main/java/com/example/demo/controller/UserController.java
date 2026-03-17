@@ -5,8 +5,8 @@ import com.example.demo.repository.model.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -21,20 +21,28 @@ public class UserController {
     @GetMapping("/users")
     public ResponseEntity<List<UserInfo>> getUsers() {
         List<UserEntity> users = userRepository.findAll();
-        List<UserInfo> resultUsers = new ArrayList<>();
-        for (UserEntity user : users) {
-            resultUsers.add(new UserInfo(user.getId(), user.getFirstName(), user.getLastName()));
-        }
-        return ResponseEntity.ok(resultUsers);
+        List<UserInfo> result = users.stream().map(u -> new UserInfo(u.getId(), u.getFirstName(), u.getLastName(), u.getAge()))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/users")
-    public ResponseEntity<UserInfo> createUser(@RequestBody UserInfo userInfo) {
-        UserEntity entity = new UserEntity(userInfo.getFirstName(), userInfo.getLastName());
-        UserEntity saved = userRepository.save(entity);
-        return ResponseEntity.ok(new UserInfo(saved.getId(), saved.getFirstName(), saved.getLastName()));
+    public ResponseEntity<?> createUser(@RequestBody UserInfo userInfo) {
+        if ((userInfo.getAge() == 0) || (userInfo.getAge() < 0) || (userInfo.getAge() > 100)) {
+            return ResponseEntity.badRequest().body("Wrong age");
+        }
+
+        UserEntity saved = userRepository.save(
+                new UserEntity(userInfo.getFirstName(), userInfo.getLastName(), userInfo.getAge())
+        );
+        return ResponseEntity.ok(new UserInfo(saved.getId(), saved.getFirstName(), saved.getLastName(), saved.getAge()));
     }
 
+    @DeleteMapping("/users")
+    public ResponseEntity<Void> deleteAllUsers() {
+        userRepository.deleteAll();
+        return ResponseEntity.ok().build();
+    }
 
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
@@ -43,19 +51,24 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<UserInfo> updateUser(@PathVariable Long id, @RequestBody UserInfo userInfo) {
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserInfo userInfo) {
+        if ((userInfo.getAge() == 0) || (userInfo.getAge() < 0) || (userInfo.getAge() > 100)) {
+            return ResponseEntity.badRequest().body("Wrong age");
+        }
+
         UserEntity user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         user.setFirstName(userInfo.getFirstName());
         user.setLastName(userInfo.getLastName());
+        user.setAge(userInfo.getAge());
         userRepository.save(user);
-        return ResponseEntity.ok(new UserInfo(user.getId(), user.getFirstName(), user.getLastName()));
+        return ResponseEntity.ok(new UserInfo(user.getId(), user.getFirstName(), user.getLastName(), user.getAge()));
     }
 
-    @PutMapping("/users/rename-all-to-efimov")
-    public ResponseEntity<Void> renameAllToEfimov() {
+    @PutMapping("/users/age/set-to-100")
+    public ResponseEntity<Void> setAllAgesTo100() {
         List<UserEntity> users = userRepository.findAll();
         for (UserEntity user : users) {
-            user.setLastName("Ефимов");
+            user.setAge(100);
             userRepository.save(user);
         }
         return ResponseEntity.ok().build();
